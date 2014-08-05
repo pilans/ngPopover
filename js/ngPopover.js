@@ -7,12 +7,13 @@ module.provider('ngPopover', function () {
 	var maximizeMargin = 0;
 
 	$(document).on('click', function (e) {
-		if (open && !$('#ng-popover').is(e.target) && $('#ng-popover').has(e.target).length == 0) {
+		if (open && !$('#ng-popover').is(e.target) /* && !$('div.fc-event-inner').is(e.target)*/ && $('#ng-popover').has(e.target).length == 0) {
 			$('#ng-popover').fadeOut(200, function() {
 				$(this).remove();
+				console.log('closed & removed popover');
 				open = false;
 			});
-		}			
+		}
 	});
 
 
@@ -29,7 +30,7 @@ module.provider('ngPopover', function () {
 			$('#ng-popover').css({
 				maxWidth: +maxWidth
 			});
-			popoverWidth = $('#ng-popover').outerWidth();		
+			popoverWidth = $('#ng-popover').outerWidth();
 		}
 
 		if (useParentWidth) {
@@ -50,33 +51,33 @@ module.provider('ngPopover', function () {
 		var pos;
 		if (placement === 'left') {
 			pos = {
-				left: elementPosition.left - popoverWidth, 
-				top: elementPosition.top + elementHeight/2 - popoverHeight / 2 
-			};	
+				left: elementPosition.left - popoverWidth,
+				top: elementPosition.top + elementHeight/2 - popoverHeight / 2
+			};
 		}
 		if (placement === 'right') {
 			pos = {
-				left: elementPosition.left + elementWidth, 
-				top: elementPosition.top + elementHeight/2 - popoverHeight / 2	
-			};			
+				left: elementPosition.left + elementWidth,
+				top: elementPosition.top + elementHeight/2 - popoverHeight / 2
+			};
 		}
 		if (placement === 'bottom') {
 			pos = {
-				left: elementPosition.left + elementWidth/2 - popoverWidth / 2, 
-				top: elementPosition.top + elementHeight	
-			};			
+				left: elementPosition.left + elementWidth/2 - popoverWidth / 2,
+				top: elementPosition.top + elementHeight
+			};
 
 		}
 		if (placement === 'top') {
 			pos = {
-				left: elementPosition.left - popoverWidth / 2, 
-				top: elementPosition.top - popoverHeight	
-			};			
+				left: elementPosition.left + elementWidth/2 - popoverWidth / 2,
+				top: elementPosition.top - popoverHeight
+			};
 		}
 
-		if (placement === 'left' || placement === 'right') {
+		if (placement === 'left' || placement === 'right') {
 			var adjustedTop = 0;
-			if (pos.top + popoverHeight > viewport.bottom || pos.top < viewport.top) {
+			if (pos.top + popoverHeight > viewport.bottom || pos.top < viewport.top) {
 				adjustedTop = Math.min(pos.top, pos.top + popoverHeight - viewport.bottom);
 				pos.top -= adjustedTop;
 
@@ -86,7 +87,7 @@ module.provider('ngPopover', function () {
 			}
 		}
 
-		if (placement === 'bottom' || placement === 'top') {
+		if (placement === 'bottom' || placement === 'top') {
 			var adjustedLeft = 0;
 			if (pos.left + popoverWidth > viewport.right) {
 				adjustedLeft = Math.min(pos.left, pos.left + popoverWidth - viewport.right);
@@ -113,15 +114,15 @@ module.provider('ngPopover', function () {
 			$('#ng-popover').width(windowWidth - padding - 2 * maximizeMargin);
 			pos.left = maximizeMargin;
 
-			if (placement === 'bottom' || placement === 'top') {
+			if (placement === 'bottom' || placement === 'top') {
 				$('#ng-popover .arrow').css({
 					left: elementPosition.left + elementWidth / 2 - maximizeMargin
-				});				
+				});
 			}
 			// $('html, body').animate({
 			// 	scrollTop: pos.top
 			// }, 0);
-		} 
+		}
 		return pos;
 	}
 
@@ -139,40 +140,46 @@ module.provider('ngPopover', function () {
 		return {
 
 			setup: function(options) {
-				smallScreenBreakpoint = options.smallScreenBreakpoint || 500;
-				maximizeMargin = options.maximizeMargin || 0;
-			}, 
+				smallScreenBreakpoint = options.smallScreenBreakpoint || 500;
+				maximizeMargin = options.maximizeMargin || 0;
+			},
 
 			close: function(data) {
 				$rootScope.$broadcast('ng-popover-hide', data);
-			}, 
+			},
+			isOpen: function() {
+				return open;
+			},
 
 			open: function(element, scope, options) {
-				var template = $templateCache.get(options.template || options.ngPopover);
+				console.log(element);
+				var template = $templateCache.get(options.template || options.ngPopover);
 				if (!template) {
-					template = options.template || options.ngPopover;
+					template = options.template || options.ngPopover;
 				}
-				var placement = options.placement || 'bottom';
-				var maximize = options.maximize || false;
-				var title = options.title || '';
+				var placement = options.placement || 'top';
+				var maximize = options.maximize || false;
+				var title = options.title || '';
 				var useParentWidth = options.useparentwidth || false;
-				var anchorSelector = options.anchorselector || '';
-				var maxWidth = options.maxwidth || null;
+				var anchorSelector = options.anchorselector || '';
+				var maxWidth = options.maxwidth || null;
 
 				if (options.data) {
 					scope = scope.$new();
 					scope.rrData = options.data;
 				}
 
-				$(element).on('click', function(evt) {
-					if (!open) {
-						$('body').append("<div id='ng-popover' style='display:none'>" + 
-											"<div class='arrow'></div>" + 
-											( title != '' ? "<div class='title'>" + title + "</div>" : "" ) + 
-											"<div class='content'>" + 
+					console.log(open);
+				//$(element).on('click', function(evt) {
+					// console.log(evt);
+					if (open === false) {
+						$('body').append("<div id='ng-popover' style='display:none'>" +
+											"<div class='arrow'></div>" +
+											( title != '' ? "<div class='title'>" + title + "</div>" : "" ) +
+											"<div class='content'>" +
 												template +
-											"</div>" + 
-											( title != '' ? "<a href='' class='close-pop'>X</a>" : "" ) + 
+											"</div>" +
+											( title != '' ? "<a href='' class='close-pop'>X</a>" : "" ) +
 										"</div>");
 						$compile($('#ng-popover').contents())(scope);
 						scope.$apply();
@@ -180,31 +187,33 @@ module.provider('ngPopover', function () {
 						var popoverPosition = calcPosition(element, placement, maximize, useParentWidth, anchorSelector, maxWidth);
 
 						$('.close-pop').on('click', function() {
-							$('#ng-popover').fadeOut(200, function() {
+							$('#ng-popover').fadeOut(0, function() {
 								$(this).remove();
 								open = false;
 							});
 						});
 
-						var placementClass = placement; 
+						var placementClass = placement;
 						if (placement === 'bottom' && title === '') {
 							placementClass = 'bottom-no-title';
 						}
 
 						$('#ng-popover')
 							.css({
-								left: popoverPosition.left, 
+								left: popoverPosition.left,
 								top: popoverPosition.top
 							})
 							.toggleClass(placementClass)
-							.fadeIn(100, function() {
+							.fadeIn(0, function() {
 								open = true;
 							});
 					}
-				});
+				//});
+
+
 
 				scope.$on('ng-popover-hide', function() {
-					$('#ng-popover').fadeOut(100, function() {
+					$('#ng-popover').fadeOut(0, function() {
 						$(this).remove();
 						open = false;
 					});
@@ -219,7 +228,7 @@ module.provider('ngPopover', function () {
 module.directive('ngPopover', function($templateCache, $compile, ngPopover) {
 
 	return {
-		restrict: 'A', 
+		restrict: 'A',
 		link: function(scope, element, attrs) {
 			ngPopover.open(element, scope, attrs);
 		}
