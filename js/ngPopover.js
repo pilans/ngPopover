@@ -165,7 +165,6 @@ module.provider('ngPopover', function () {
                     scope.rrData = options.data;
                 }
 
-                $(element).on('click', function(evt) {
                     if (!open && !opening) {
                         opening = true;
                         $('body').append("<div id='ng-popover' style='display:none'>" +
@@ -204,7 +203,6 @@ module.provider('ngPopover', function () {
                                 opening = false;
                             });
                     }
-                });
 
                 scope.$on('ng-popover-hide', function() {
                     $('#ng-popover').fadeOut(100, function() {
