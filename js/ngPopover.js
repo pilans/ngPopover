@@ -9,7 +9,7 @@ module.provider('ngPopover', function () {
 
     $(document).on('click', function (e) {
         if (open && !$('#ng-popover').is(e.target) && $('#ng-popover').has(e.target).length == 0) {
-            $('#ng-popover').fadeOut(200, function() {
+            $('#ng-popover').hide(0, function() {
                 $(this).remove();
                 open = false;
             });
@@ -20,8 +20,8 @@ module.provider('ngPopover', function () {
     var calcPosition = function(element, placement, maximize, useParentWidth, anchorSelector, maxWidth) {
 
         var elementPosition = $(element).offset();
-        var elementWidth = (typeof element[0]["getBBox"] === "function") ? element[0].getBBox().width : $(element).outerWidth();
-        var elementHeight = (typeof element[0]["getBBox"] === "function") ? element[0].getBBox().height : $(element).outerHeight();
+        var elementWidth = $(element).outerWidth();
+        var elementHeight = $(element).outerHeight();
         var popoverWidth = $('#ng-popover').outerWidth();
         var popoverHeight = $('#ng-popover').outerHeight();
         var windowWidth = $(window).width();
@@ -129,7 +129,7 @@ module.provider('ngPopover', function () {
     // Hide popovers when pressing esc
     $('body').on('keyup', function(ev) {
         if(ev.keyCode === 27) {
-            $('#ng-popover').fadeOut(200, function() {
+            $('#ng-popover').hide(0, function() {
                 $(this).remove();
                 open = false;
             });
@@ -181,7 +181,7 @@ module.provider('ngPopover', function () {
                         var popoverPosition = calcPosition(element, placement, maximize, useParentWidth, anchorSelector, maxWidth);
 
                         $('.close-pop').on('click', function() {
-                            $('#ng-popover').fadeOut(200, function() {
+                            $('#ng-popover').hide(0, function() {
                                 $(this).remove();
                                 open = false;
                             });
@@ -198,14 +198,14 @@ module.provider('ngPopover', function () {
                                 top: popoverPosition.top
                             })
                             .toggleClass(placementClass)
-                            .fadeIn(100, function() {
+                            .show(0, function() {
                                 open = true;
                                 opening = false;
                             });
                     }
 
                 scope.$on('ng-popover-hide', function() {
-                    $('#ng-popover').fadeOut(100, function() {
+                    $('#ng-popover').hide(0, function() {
                         $(this).remove();
                         open = false;
                     });
