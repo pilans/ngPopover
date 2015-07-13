@@ -73,7 +73,7 @@
             }
             if (placement === 'top') {
                 pos = {
-                    left: elementPosition.left - popoverWidth / 2,
+                    left: elementPosition.left  + elementWidth/2 - popoverWidth / 2,
                     top: elementPosition.top - popoverHeight
                 };
             }
